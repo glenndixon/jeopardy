@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { HistoryModal } from "./HistoryModal";
+import { scoreFor, useAwardHistory } from "./history";
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 5;
@@ -11,25 +13,17 @@ const PLAYER_COUNTS = Array.from(
 
 export function App() {
   const [playerCount, setPlayerCount] = useState(MIN_PLAYERS);
-  // Scores are kept for all possible players so changing the player count
-  // never discards anyone's score.
-  const [scores, setScores] = useState<number[]>(() =>
-    Array(MAX_PLAYERS).fill(0),
-  );
   const [selected, setSelected] = useState(0);
   const [doubleJeopardy, setDoubleJeopardy] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const history = useAwardHistory();
 
   const multiplier = doubleJeopardy ? 2 : 1;
+  const players = Array.from({ length: playerCount }, (_, i) => i);
 
   function changePlayerCount(count: number) {
     setPlayerCount(count);
     setSelected((current) => Math.min(current, count - 1));
-  }
-
-  function grant(amount: number) {
-    setScores((current) =>
-      current.map((score, i) => (i === selected ? score + amount : score)),
-    );
   }
 
   return (
@@ -51,15 +45,17 @@ export function App() {
       </section>
 
       <section className="players" aria-label="Select a player">
-        {scores.slice(0, playerCount).map((score, i) => (
+        {players.map((player) => (
           <button
-            key={i}
+            key={player}
             className="player"
-            aria-pressed={i === selected}
-            onClick={() => setSelected(i)}
+            aria-pressed={player === selected}
+            onClick={() => setSelected(player)}
           >
-            <span className="player-name">Player {i + 1}</span>
-            <span className="player-score">${score.toLocaleString()}</span>
+            <span className="player-name">Player {player + 1}</span>
+            <span className="player-score">
+              ${scoreFor(history.awards, player).toLocaleString()}
+            </span>
           </button>
         ))}
       </section>
@@ -68,20 +64,40 @@ export function App() {
         {BASE_VALUES.map((value) => {
           const amount = value * multiplier;
           return (
-            <button key={value} className="value" onClick={() => grant(amount)}>
+            <button
+              key={value}
+              className="value"
+              onClick={() => history.award(selected, amount)}
+            >
               ${amount.toLocaleString()}
             </button>
           );
         })}
       </section>
 
-      <button
-        className="double"
-        aria-pressed={doubleJeopardy}
-        onClick={() => setDoubleJeopardy((on) => !on)}
-      >
-        Double Jeopardy: {doubleJeopardy ? "On" : "Off"}
-      </button>
+      <section className="row wrap">
+        <button
+          aria-pressed={doubleJeopardy}
+          onClick={() => setDoubleJeopardy((on) => !on)}
+        >
+          Double Jeopardy: {doubleJeopardy ? "On" : "Off"}
+        </button>
+        <span className="spacer" />
+        <button disabled={!history.canUndo} onClick={history.undo}>
+          Undo
+        </button>
+        <button disabled={!history.canRedo} onClick={history.redo}>
+          Redo
+        </button>
+        <button onClick={() => setHistoryOpen(true)}>History</button>
+      </section>
+
+      <HistoryModal
+        open={historyOpen}
+        awards={history.awards}
+        onRemove={history.remove}
+        onClose={() => setHistoryOpen(false)}
+      />
     </main>
   );
 }
