@@ -17,12 +17,15 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+/* Fills the width of an iPad with a thin margin; on wider browser windows
+   it stops growing at the max-width and stays centered. */
 .app {
-  max-width: 720px;
+  box-sizing: border-box;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 16px 48px;
+  padding: 12px;
   display: grid;
-  gap: 24px;
+  gap: 16px;
 }
 
 h1 {
@@ -38,6 +41,8 @@ button {
   border-radius: 10px;
   padding: 12px 16px;
   cursor: pointer;
+  /* Stops iPad Safari zooming in on quick repeated taps. */
+  touch-action: manipulation;
 }
 
 button:hover:not(:disabled) {
@@ -86,18 +91,35 @@ button[aria-pressed="true"] {
   display: grid;
   gap: 4px;
   padding: 16px 12px;
+  container-type: inline-size;
+}
+
+.player-name {
+  font-size: 1.25rem;
 }
 
 .player-score {
-  font-size: 3.5rem;
+  /* Shrinks with the button's width so five players still fit across. */
+  font-size: clamp(1.5rem, 21cqi, 5rem);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
 .value {
-  font-size: 1.75rem;
+  /* Extra vertical padding to make the buttons tall, easy tap targets. */
+  padding-block: 27.5px;
+  padding-inline: 8px;
+  container-type: inline-size;
+}
+
+.value-amount {
+  /* As big as fits: the widest label ("$2000") is about 3.2em wide, so
+     29% of the button's inner width leaves a little slack. Every button
+     gets the same size, whatever its own label. */
+  font-size: 29cqi;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .wrap {

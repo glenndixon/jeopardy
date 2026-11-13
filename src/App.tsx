@@ -76,7 +76,7 @@ export function App() {
                 history.award(selected, amount);
               }}
             >
-              ${amount.toLocaleString()}
+              <span className="value-amount">${amount}</span>
             </button>
           );
         })}
