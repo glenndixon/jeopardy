@@ -4,11 +4,18 @@ import type { Award } from "./history";
 interface Props {
   open: boolean;
   awards: Award[];
+  nameOf: (player: number) => string;
   onRemove: (id: number) => void;
   onClose: () => void;
 }
 
-export function HistoryModal({ open, awards, onRemove, onClose }: Props) {
+export function HistoryModal({
+  open,
+  awards,
+  nameOf,
+  onRemove,
+  onClose,
+}: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -21,7 +28,7 @@ export function HistoryModal({ open, awards, onRemove, onClose }: Props) {
   return (
     <dialog
       ref={dialogRef}
-      className="history"
+      className="modal"
       aria-labelledby="history-title"
       onClose={onClose}
       // A click on the backdrop lands on the dialog element itself.
@@ -29,8 +36,8 @@ export function HistoryModal({ open, awards, onRemove, onClose }: Props) {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <div className="history-body">
-        <header className="history-header">
+      <div className="modal-body">
+        <header className="modal-header">
           <h2 id="history-title">History</h2>
           <button className="small" onClick={onClose}>
             Close
@@ -44,13 +51,13 @@ export function HistoryModal({ open, awards, onRemove, onClose }: Props) {
             {awards.map((award, i) => (
               <li key={award.id}>
                 <span className="history-index">{i + 1}.</span>
-                <span>Player {award.player + 1}</span>
+                <span className="history-name">{nameOf(award.player)}</span>
                 <span className="history-amount">
                   ${award.amount.toLocaleString()}
                 </span>
                 <button
                   className="small delete"
-                  aria-label={`Delete award ${i + 1}: $${award.amount.toLocaleString()} to Player ${award.player + 1}`}
+                  aria-label={`Delete award ${i + 1}: $${award.amount.toLocaleString()} to ${nameOf(award.player)}`}
                   onClick={() => onRemove(award.id)}
                 >
                   ✕

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { HistoryModal } from "./HistoryModal";
+import { NameModal } from "./NameModal";
+import { PlayerButton } from "./PlayerButton";
 import { scoreFor, useAwardHistory } from "./history";
+import { defaultName, usePlayerNames } from "./playerNames";
 import { playAwardSound, playSelectSound } from "./sound";
 
 const MIN_PLAYERS = 2;
@@ -17,7 +20,9 @@ export function App() {
   const [selected, setSelected] = useState(0);
   const [doubleJeopardy, setDoubleJeopardy] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [renaming, setRenaming] = useState<number | null>(null);
   const history = useAwardHistory();
+  const names = usePlayerNames(MAX_PLAYERS);
 
   const multiplier = doubleJeopardy ? 2 : 1;
   const players = Array.from({ length: playerCount }, (_, i) => i);
@@ -47,20 +52,17 @@ export function App() {
 
       <section className="players" aria-label="Select a player">
         {players.map((player) => (
-          <button
+          <PlayerButton
             key={player}
-            className="player"
-            aria-pressed={player === selected}
-            onClick={() => {
+            name={names.nameOf(player)}
+            score={scoreFor(history.awards, player)}
+            selected={player === selected}
+            onSelect={() => {
               playSelectSound();
               setSelected(player);
             }}
-          >
-            <span className="player-name">Player {player + 1}</span>
-            <span className="player-score">
-              ${scoreFor(history.awards, player).toLocaleString()}
-            </span>
-          </button>
+            onLongPress={() => setRenaming(player)}
+          />
         ))}
       </section>
 
@@ -102,8 +104,19 @@ export function App() {
       <HistoryModal
         open={historyOpen}
         awards={history.awards}
+        nameOf={names.nameOf}
         onRemove={history.remove}
         onClose={() => setHistoryOpen(false)}
+      />
+
+      <NameModal
+        player={renaming}
+        currentName={renaming === null ? "" : names.nameOf(renaming)}
+        placeholder={renaming === null ? "" : defaultName(renaming)}
+        onSave={(name) => {
+          if (renaming !== null) names.rename(renaming, name);
+        }}
+        onClose={() => setRenaming(null)}
       />
     </main>
   );
