@@ -89,7 +89,7 @@ button[aria-pressed="true"] {
 }
 
 .player-score {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }

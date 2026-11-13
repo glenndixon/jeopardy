@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { HistoryModal } from "./HistoryModal";
 import { scoreFor, useAwardHistory } from "./history";
+import { playAwardSound, playSelectSound } from "./sound";
 
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 5;
@@ -50,7 +51,10 @@ export function App() {
             key={player}
             className="player"
             aria-pressed={player === selected}
-            onClick={() => setSelected(player)}
+            onClick={() => {
+              playSelectSound();
+              setSelected(player);
+            }}
           >
             <span className="player-name">Player {player + 1}</span>
             <span className="player-score">
@@ -67,7 +71,10 @@ export function App() {
             <button
               key={value}
               className="value"
-              onClick={() => history.award(selected, amount)}
+              onClick={() => {
+                playAwardSound();
+                history.award(selected, amount);
+              }}
             >
               ${amount.toLocaleString()}
             </button>
