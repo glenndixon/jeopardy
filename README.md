@@ -4,6 +4,8 @@ A score keeper for a game of Jeopardy with 2–5 players, built for an iPad but 
 
 Live at https://jeopardy-scores.web.app
 
+![The app with three players: Alice on $2,200, Bob selected on $3,400 and Carol on $800, above the five money buttons](docs/screenshot.jpg)
+
 ## Features
 
 - Tap a player to select them, then tap an amount ($200–$1000) to award it.
