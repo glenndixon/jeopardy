@@ -60,6 +60,6 @@ This builds the site and publishes the `public` directory. To deploy to your own
 
 - `index.html` — the page Vite builds from
 - `src/` — the app, written in TypeScript and React
-- `public/` — build output (not checked in)
+- `public/` — build output, checked in; regenerate it with `npm run build`
 
 Built with [Vite](https://vite.dev), [React](https://react.dev) and [TypeScript](https://www.typescriptlang.org).
